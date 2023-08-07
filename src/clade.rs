@@ -2,7 +2,7 @@ use uuid::Uuid;
 use serde::{Serialize, Deserialize};
 use std::cmp::Ordering;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, Hash, Serialize, Deserialize)]
 pub enum Clade {
     Branch {
         uuid: Uuid,
@@ -159,26 +159,36 @@ impl PartialEq for Clade {
 
 #[test]
 pub fn clade_descendents() {
-    let tax = Clade::new(
-        "root".into(),
+    let tax1 = Clade::new(
+        "root:1".into(),
         Some(vec![Clade::new(
-            "child".into(),
+            "child:1".into(),
             Some(vec![
-                Clade::new("grandchild1".into(), None),
-                Clade::new("grandchild2".into(), None),
+                Clade::new("grandchild1:1".into(), None),
+                Clade::new("grandchild2:1".into(), None),
             ]),
         )]),
     );
-    assert!(tax.descendent(&tax.id()));
-    assert!(tax >= tax);
-    assert!(tax == tax);
-    match tax.children() {
+
+    let tax2 = Clade::new(
+        "root:2".into(),
+        Some(vec![Clade::new(
+            "child:2".into(),
+            None
+        )]),
+    );
+
+
+    assert!(tax1.descendent(&tax1.id()));
+    assert!(tax1 >= tax1);
+    assert!(tax1 == tax1);
+    match tax1.children() {
         Some(children) => {
             assert!(children[0].descendent(&children[0].id()));
-            assert!(tax.descendent(&children[0].id()));
-            assert!(!(tax < children[0]));
-            assert!(tax > children[0]);
-            assert!(tax >= children[0]);
+            assert!(tax1.descendent(&children[0].id()));
+            assert!(!(tax1 < children[0]));
+            assert!(tax1 > children[0]);
+            assert!(tax1 >= children[0]);
             assert!(children[0] == children[0]);
             match children[0].children() {
                 Some(grandchildren) => {
@@ -187,16 +197,16 @@ pub fn clade_descendents() {
                     assert!(children[0].descendent(&grandchildren[0].id()));
                     assert!(children[0] > grandchildren[0]);
                     assert!(children[0] >= grandchildren[1]);
-                    assert!(tax > grandchildren[0]);
-                    assert!(!(tax < grandchildren[0]));
+                    assert!(tax1 > grandchildren[0]);
+                    assert!(!(tax1 < grandchildren[0]));
                     assert!(grandchildren[0] != grandchildren[1]);
-                    assert!(tax.descendent(&grandchildren[0].id()));
-                    assert!(tax.descendent(&grandchildren[1].id()));
+                    assert!(tax1.descendent(&grandchildren[0].id()));
+                    assert!(tax1.descendent(&grandchildren[1].id()));
                 }
                 None => assert!(false),
             }
-            assert_eq!(children[0].id(),tax.query(&"child".into()).unwrap());
-            assert_eq!(children[0],tax.get(&children[0].id()).unwrap());
+            assert_eq!(children[0].id(),tax1.query(&"child:1".into()).unwrap());
+            assert_eq!(children[0],tax1.get(&children[0].id()).unwrap());
         }
         None => assert!(false),
     }

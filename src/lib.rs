@@ -1,7 +1,9 @@
-pub mod address;
+pub mod aliases;
 pub mod clade;
+pub mod function;
 pub mod guard;
 pub mod place;
 pub mod signature;
+pub mod symbol;
 pub mod token;
 pub mod transition;

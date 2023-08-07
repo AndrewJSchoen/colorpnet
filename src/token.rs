@@ -3,7 +3,7 @@ use serde::{Serialize, Deserialize};
 
 use crate::clade::Clade;
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Token {
     pub id: Uuid,
     pub name: String,

@@ -1,16 +1,16 @@
 use std::collections::HashMap;
 use serde::{Serialize, Deserialize};
 use crate::clade::Clade;
-use crate::address::Address;
+use crate::symbol::Symbol;
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum Guard {
-    Is(Address,Clade),
-    GreaterThan(Address,Clade),
-    LessThan(Address,Clade),
-    GreaterThanOrEqual(Address,Clade),
-    LessThanOrEqual(Address,Clade),
-    Not(Address,Clade),
+    Is(Symbol,Clade),
+    GreaterThan(Symbol,Clade),
+    LessThan(Symbol,Clade),
+    GreaterThanOrEqual(Symbol,Clade),
+    LessThanOrEqual(Symbol,Clade),
+    Not(Symbol,Clade),
     All(Vec<Guard>),
     Any(Vec<Guard>),
     None(Vec<Guard>),
@@ -18,14 +18,14 @@ pub enum Guard {
 }
 
 impl Guard {
-    pub fn eval(&self, candidates:&HashMap<Address,Clade>) -> bool {
+    pub fn eval(&self, candidates:&HashMap<Symbol,Clade>) -> bool {
         match self {
-            Guard::Is(address, clade) => candidates.get(address).map(|c| c == clade).unwrap_or(false),
-            Guard::GreaterThan(address, clade) => candidates.get(address).map(|c| c > clade).unwrap_or(false),
-            Guard::LessThan(address, clade) => candidates.get(address).map(|c| c < clade).unwrap_or(false),
-            Guard::GreaterThanOrEqual(address, clade) => candidates.get(address).map(|c| c >= clade).unwrap_or(false),
-            Guard::LessThanOrEqual(address, clade) => candidates.get(address).map(|c| c <= clade).unwrap_or(false),
-            Guard::Not(address, clade) => candidates.get(address).map(|c| c != clade).unwrap_or(false),
+            Guard::Is(symbol, clade) => candidates.get(symbol).map(|c| c == clade).unwrap_or(false),
+            Guard::GreaterThan(symbol, clade) => candidates.get(symbol).map(|c| c > clade).unwrap_or(false),
+            Guard::LessThan(symbol, clade) => candidates.get(symbol).map(|c| c < clade).unwrap_or(false),
+            Guard::GreaterThanOrEqual(symbol, clade) => candidates.get(symbol).map(|c| c >= clade).unwrap_or(false),
+            Guard::LessThanOrEqual(symbol, clade) => candidates.get(symbol).map(|c| c <= clade).unwrap_or(false),
+            Guard::Not(symbol, clade) => candidates.get(symbol).map(|c| c != clade).unwrap_or(false),
             Guard::All(guards) => guards.iter().all(|g| g.eval(candidates)),
             Guard::Any(guards) => guards.iter().any(|g| g.eval(candidates)),
             Guard::None(guards) => guards.iter().all(|g| !g.eval(candidates)),
@@ -33,17 +33,17 @@ impl Guard {
         }
     }
 
-    pub fn addresses(&self) -> Vec<Address> {
+    pub fn symbols(&self) -> Vec<Symbol> {
         match self {
-            Guard::Is(address, _) => vec![address.clone()],
-            Guard::GreaterThan(address, _) => vec![address.clone()],
-            Guard::LessThan(address, _) => vec![address.clone()],
-            Guard::GreaterThanOrEqual(address, _) => vec![address.clone()],
-            Guard::LessThanOrEqual(address, _) => vec![address.clone()],
-            Guard::Not(address, _) => vec![address.clone()],
-            Guard::All(guards) => guards.iter().flat_map(|g| g.addresses()).collect(),
-            Guard::Any(guards) => guards.iter().flat_map(|g| g.addresses()).collect(),
-            Guard::None(guards) => guards.iter().flat_map(|g| g.addresses()).collect(),
+            Guard::Is(symbol, _) => vec![symbol.clone()],
+            Guard::GreaterThan(symbol, _) => vec![symbol.clone()],
+            Guard::LessThan(symbol, _) => vec![symbol.clone()],
+            Guard::GreaterThanOrEqual(symbol, _) => vec![symbol.clone()],
+            Guard::LessThanOrEqual(symbol, _) => vec![symbol.clone()],
+            Guard::Not(symbol, _) => vec![symbol.clone()],
+            Guard::All(guards) => guards.iter().flat_map(|g| g.symbols()).collect(),
+            Guard::Any(guards) => guards.iter().flat_map(|g| g.symbols()).collect(),
+            Guard::None(guards) => guards.iter().flat_map(|g| g.symbols()).collect(),
             Guard::Empty => vec![]
         }
     }

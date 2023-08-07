@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use uuid::Uuid;
+use crate::signature::Signature;
+use crate::aliases::{Time,Cost};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ColoredPetriNet {
